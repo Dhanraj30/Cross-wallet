@@ -8,6 +8,8 @@ import {
   useBalance,  
   useWriteContract,
   useWaitForTransactionReceipt,
+  useConnect,
+  useSwitchChain
 } from 'wagmi'
 import { polygonAmoy, sepolia } from 'wagmi/chains'
 import { parseEther,  isAddress } from 'viem'
@@ -72,6 +74,8 @@ export default function Dashboard() {
   const [amount, setAmount] = useState('')
   const [receiver, setReceiver] = useState('')
   const [transactions, setTransactions] = useState<Transaction[]>([])
+  const { connectors, connect } = useConnect()
+  const { switchChain } = useSwitchChain()
 
   const { 
     writeContract, 
@@ -91,6 +95,20 @@ export default function Dashboard() {
   const { data: balance } = useBalance({
     address,
   })
+
+  // Function to handle network switching
+  const handleNetworkSwitch = (targetChainId: number) => {
+    try {
+      switchChain({ chainId: targetChainId })
+    } catch (error) {
+      console.error('Network Switch Error:', error)
+      toast({
+        title: "Network Switch Error",
+        description: error instanceof Error ? error.message : "Failed to switch network",
+        variant: "destructive"
+      })
+    }
+  }
 
   const isValidTransfer = useMemo(() => {
     if (!isAddress(receiver)) return false
@@ -235,10 +253,54 @@ export default function Dashboard() {
             <CardTitle>Connect Wallet</CardTitle>
             <CardDescription>Please connect your wallet to use the dashboard</CardDescription>
           </CardHeader>
+          <CardContent className="space-y-2">
+            {connectors.map((connector) => (
+              <Button 
+                key={connector.id} 
+                onClick={() => connect({ connector })} 
+                className="w-full"
+              >
+                {connector.name}
+              </Button>
+            ))}
+          </CardContent>
         </Card>
       </div>
     )
   }
+
+  
+  // Check if connected to a supported chain
+  const isSupportedChain = chain && (chain.id === polygonAmoy.id || chain.id === sepolia.id)
+  
+  // If not on a supported chain, show network switch prompt
+  if (!isSupportedChain) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Card className="w-96">
+          <CardHeader>
+            <CardTitle>Unsupported Network</CardTitle>
+            <CardDescription>Please switch to a supported network</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button 
+              onClick={() => handleNetworkSwitch(polygonAmoy.id)} 
+              className="w-full"
+            >
+              Switch to Polygon Amoy
+            </Button>
+            <Button 
+              onClick={() => handleNetworkSwitch(sepolia.id)} 
+              className="w-full"
+            >
+              Switch to Ethereum Sepolia
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground">
