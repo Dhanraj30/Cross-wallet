@@ -30,6 +30,7 @@ import contractABI from '@/abi/TokenTransferor.json'
 
 // Get Moralis API key from environment variable
 const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY
+//console.log("API Key during build:", process.env.NEXT_PUBLIC_MORALIS_API_KEY);
 
 if (!MORALIS_API_KEY) {
   throw new Error('NEXT_PUBLIC_MORALIS_API_KEY is not set in environment variables')
