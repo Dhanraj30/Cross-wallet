@@ -15,7 +15,7 @@ export interface ToastProps {
     title?: string;
     description?: string;
     action?: React.ReactNode;
-    [key: string]: any; // to allow additional props if needed
+    [key: string]: string | React.ReactNode | undefined; // Narrowing types instead of `any`
   }
   
 export function Toaster() {

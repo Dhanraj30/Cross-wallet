@@ -8,13 +8,13 @@ import {
   useBalance,  
   useWriteContract,
   useWaitForTransactionReceipt,
-  useEstimateGas
 } from 'wagmi'
 import { polygonAmoy, sepolia } from 'wagmi/chains'
-import { parseEther, formatEther, isAddress } from 'viem'
+import { parseEther,  isAddress } from 'viem'
 import Moralis from 'moralis'
-import { EvmChain } from '@moralisweb3/common-evm-utils'
-
+import { EvmChain, EvmTransaction } from '@moralisweb3/common-evm-utils'
+import { Logo} from './Logo'
+import { Footer } from './Footer'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -57,7 +57,7 @@ const tokenAddresses: { [key: number]: `0x${string}` } = {
 interface Transaction {
   hash: string;
   from_address: string;
-  to?: string;
+  to: string;
   value: string;
   gasUsed: string;
 }
@@ -77,12 +77,6 @@ export default function Dashboard() {
     error: writeContractError,
     data: transferHash 
   } = useWriteContract()
-
-  const { data: estimatedGas } = useEstimateGas({
-    account: address,
-    to: contractAddresses[chain?.id as keyof typeof contractAddresses],
-    value: parseEther('0.01')
-  })
 
   const { 
     isLoading: isConfirming, 
@@ -131,7 +125,7 @@ export default function Dashboard() {
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light'
     setTheme(savedTheme)
-  }, [])
+  }, [setTheme])
 
   useEffect(() => {
     const fetchTransactionHistory = async () => {
@@ -153,12 +147,12 @@ export default function Dashboard() {
           limit: 6
         });
 
-        setTransactions(response.result.map((tx: any) => ({
+        setTransactions(response.result.map((tx: EvmTransaction): Transaction => ({
           hash: tx.hash,
-          from_address: tx.from_address,
-          to: tx.to_address || 'N/A',
-          value: (parseFloat(tx.value) / 1e18).toFixed(4),
-          gasUsed: tx.receipt_gas_used || '0',
+          from_address: tx.from.checksum || 'N/A',
+          to: tx.to?.checksum || 'N/A',
+          value: tx.value ? (parseFloat(tx.value.ether) || 0).toFixed(4) : '0.0000',
+          gasUsed: tx.gasUsed?.toString() || '0',
         })));
 
        // console.log(setTransactions);
@@ -168,7 +162,7 @@ export default function Dashboard() {
     };
 
     fetchTransactionHistory();
-  }, [address, chain?.id]);
+  }, [address, chain]);
 
   useEffect(() => {
     if (writeContractError) {
@@ -245,7 +239,7 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto p-4">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Exo Wallet</h1>
+        <Logo />
           <span className="flex w-fit py-1 px-4 text-[0.8rem] bg-gradient-to-tr from-emerald-100/60 to-amber-100/60 text-neutral-600 rounded-2xl">
             ⚡️ &nbsp;Live on testnet
           </span>
@@ -355,6 +349,7 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+        <Footer />
       </div>
       <Toaster />
     </div>
