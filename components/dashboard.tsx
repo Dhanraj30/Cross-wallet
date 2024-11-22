@@ -13,6 +13,7 @@ import { polygonAmoy, sepolia } from 'wagmi/chains'
 import { parseEther,  isAddress } from 'viem'
 import Moralis from 'moralis'
 import { EvmChain, EvmTransaction } from '@moralisweb3/common-evm-utils'
+
 import { Logo} from './Logo'
 import { Footer } from './Footer'
 import { Button } from "@/components/ui/button"
@@ -29,12 +30,12 @@ import { Switch } from "@/components/ui/switch"
 import contractABI from '@/abi/TokenTransferor.json'
 
 // Get Moralis API key from environment variable
-const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY
+const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY || ''
 //console.log("API Key during build:", process.env.NEXT_PUBLIC_MORALIS_API_KEY);
 
-if (!MORALIS_API_KEY) {
-  throw new Error('NEXT_PUBLIC_MORALIS_API_KEY is not set in environment variables')
-}
+//if (!MORALIS_API_KEY) {
+  //throw new Error('NEXT_PUBLIC_MORALIS_API_KEY is not set in environment variables')
+//}
 
 // Contract addresses (replace with your deployed contract addresses)
 const contractAddresses: { [key: number]: `0x${string}` } = {
@@ -130,7 +131,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     const fetchTransactionHistory = async () => {
-      if (!address || !chain) return;
+      if (!address || !chain || !MORALIS_API_KEY) return;
 
       try {
         // Prevent multiple initializations
@@ -162,8 +163,11 @@ export default function Dashboard() {
       }
     };
 
-    fetchTransactionHistory();
-  }, [address, chain]);
+    if (isMounted && address) {
+      fetchTransactionHistory();
+    }
+    //fetchTransactionHistory();
+  }, [address, chain, isMounted]);
 
   useEffect(() => {
     if (writeContractError) {
