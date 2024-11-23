@@ -1,4 +1,4 @@
-### Cross-Chain-Wallet
+## Cross-Chain-Wallet
 
  It is a secure and user-friendly cross-chain wallet enabling seamless management and transactions of crypto assets across multiple blockchains (e.g.,Sepolia, Polygon Amoy). Integrated cross-chain bridging CCIP protocol.
  
