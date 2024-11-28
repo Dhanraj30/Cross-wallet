@@ -13,8 +13,8 @@ import {
 } from 'wagmi'
 import { polygonAmoy, sepolia } from 'wagmi/chains'
 import { parseEther,  isAddress } from 'viem'
-import Moralis from 'moralis'
-import { EvmChain, EvmTransaction } from '@moralisweb3/common-evm-utils'
+//import Moralis from 'moralis'
+//import { EvmChain, EvmTransaction } from '@moralisweb3/common-evm-utils'
 
 import { Logo} from './Logo'
 import { Footer } from './Footer'
@@ -23,21 +23,14 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+//import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Toaster } from "@/components/ui/toaster"
 import { toast } from "@/hooks/use-toast"
 import { Moon, Sun } from 'lucide-react'
 import { Switch } from "@/components/ui/switch"
-
+import TransactionHistory from './TransactionHistory'
 import contractABI from '@/abi/TokenTransferor.json'
 
-// Get Moralis API key from environment variable
-const MORALIS_API_KEY = process.env.NEXT_PUBLIC_MORALIS_API_KEY || ''
-//console.log("API Key during build:", process.env.NEXT_PUBLIC_MORALIS_API_KEY);
-
-//if (!MORALIS_API_KEY) {
-  //throw new Error('NEXT_PUBLIC_MORALIS_API_KEY is not set in environment variables')
-//}
 
 // Contract addresses (replace with your deployed contract addresses)
 const contractAddresses: { [key: number]: `0x${string}` } = {
@@ -56,7 +49,7 @@ const tokenAddresses: { [key: number]: `0x${string}` } = {
   [polygonAmoy.id]: '0xFd57b4ddBf88a4e07fF4e34C487b99af2Fe82a05',
   [sepolia.id]: '0xcab0EF91Bee323d1A617c0a027eE753aFd6997E4'
 }
-
+/*
 // Transaction interface
 interface Transaction {
   hash: string;
@@ -64,7 +57,7 @@ interface Transaction {
   to: string;
   value: string;
   gasUsed: string;
-}
+}*/
 
 export default function Dashboard() {
   const [isMounted, setIsMounted] = useState(false)
@@ -73,7 +66,7 @@ export default function Dashboard() {
   const [destinationChain, setDestinationChain] = useState<number>(sepolia.id)
   const [amount, setAmount] = useState('')
   const [receiver, setReceiver] = useState('')
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  //const [transactions, setTransactions] = useState<Transaction[]>([])
   const { connectors, connect } = useConnect()
   const { switchChain } = useSwitchChain()
 
@@ -147,46 +140,7 @@ export default function Dashboard() {
     setTheme(savedTheme)
   }, [setTheme])
 
-  useEffect(() => {
-    const fetchTransactionHistory = async () => {
-      if (!address || !chain || !MORALIS_API_KEY) return;
-
-      try {
-        // Prevent multiple initializations
-        if (!Moralis.Core.isStarted) {
-          await Moralis.start({ apiKey: MORALIS_API_KEY });
-        }
-
-        const moralisChain = chain.id === polygonAmoy.id 
-          ? EvmChain.POLYGON 
-          : EvmChain.SEPOLIA;
-
-        const response = await Moralis.EvmApi.transaction.getWalletTransactions({
-          address,
-          chain: moralisChain,
-          limit: 6
-        });
-
-        setTransactions(response.result.map((tx: EvmTransaction): Transaction => ({
-          hash: tx.hash,
-          from_address: tx.from.checksum || 'N/A',
-          to: tx.to?.checksum || 'N/A',
-          value: tx.value ? (parseFloat(tx.value.ether) || 0).toFixed(4) : '0.0000',
-          gasUsed: tx.gasUsed?.toString() || '0',
-        })));
-
-       // console.log(setTransactions);
-      } catch (error) {
-        console.error('Failed to fetch transaction history:', error);
-      }
-    };
-
-    if (isMounted && address) {
-      fetchTransactionHistory();
-    }
-    //fetchTransactionHistory();
-  }, [address, chain, isMounted]);
-
+ 
   useEffect(() => {
     if (writeContractError) {
       console.error('Write Contract Error:', writeContractError)
@@ -386,35 +340,7 @@ export default function Dashboard() {
             </CardFooter>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Transaction History</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Transaction Hash</TableHead>
-                    <TableHead>From</TableHead>
-                    <TableHead>To</TableHead>
-                    <TableHead>Value</TableHead>
-                    <TableHead>Gas Used</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {transactions.map((tx) => (
-                    <TableRow key={tx.hash}>
-                      <TableCell>{tx.hash ? tx.hash.slice(0, 10) + '...' : 'N/A'}</TableCell>
-                      <TableCell>{tx.from_address ? tx.from_address.slice(0, 10) + '...' : 'N/A'}</TableCell>
-                      <TableCell>{tx.to ? tx.to.slice(0, 10) + '...' : 'N/A'}</TableCell>
-                      <TableCell>{tx.value} ETH</TableCell>
-                      <TableCell>{tx.gasUsed || '0'}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
+          <TransactionHistory />
         </div>
         <Footer />
       </div>

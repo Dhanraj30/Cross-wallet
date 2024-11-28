@@ -20,6 +20,7 @@
     "clsx": "^2.1.1",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
+    "graphql-request": "^7.1.2",
     "lucide-react": "^0.460.0",
     "moralis": "^2.27.2",
     "next": "15.0.3",
