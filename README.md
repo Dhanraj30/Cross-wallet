@@ -2,7 +2,7 @@
 
  It is a secure and user-friendly cross-chain wallet enabling seamless management and transactions of crypto assets across multiple blockchains (e.g.,Sepolia, Polygon Amoy). Integrated cross-chain bridging CCIP protocol.
  
-![alt text](https://github.com/Dhanraj30/Cross-wallet/blob/main/Screenshot%20(112).png)
+![alt text](https://github.com/Dhanraj30/Cross-wallet/blob/main/Screenshot%20(125).png)
 
 ## Chainlink CCIP
 
