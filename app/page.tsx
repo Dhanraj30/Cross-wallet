@@ -7,7 +7,8 @@ import {
   QueryClient,
 } from '@tanstack/react-query';
 import { gql, request } from 'graphql-request';
-import Dashboard from '@/components/dashboard'; // Assuming the Dashboard component is in this path
+//import Dashboard from '@/components/dashboard'; // Assuming the Dashboard component is in this path
+import LandingPage from '@/components/landing-page'
 
 const query = gql`
 {
@@ -34,7 +35,7 @@ export default async function HomePage() {
   return (
     // HydrationBoundary to handle the client-side hydration after prefetching
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Dashboard /> {/* Pass the hydrated state to the Dashboard */}
+      <LandingPage /> {/* Pass the hydrated state to the Dashboard */}
     </HydrationBoundary>
   );
 }

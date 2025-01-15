@@ -17,7 +17,7 @@ import { parseEther,  isAddress } from 'viem'
 //import { EvmChain, EvmTransaction } from '@moralisweb3/common-evm-utils'
 
 import { Logo} from './Logo'
-import { Footer } from './Footer'
+import  Footer  from './Footer'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
